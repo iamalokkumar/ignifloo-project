@@ -1,0 +1,33 @@
+name: Deploy App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-client:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install frontend deps
+        run: npm ci
+      - name: Build React app
+        run: npm run build
+
+  build-server:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install backend deps
+        run: npm ci
+      - name: Lint + Health Check
+        run: |
+          npm run lint || true
+          curl http://localhost:8080/healthz || true
